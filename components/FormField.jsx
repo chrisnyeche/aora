@@ -13,7 +13,7 @@ const FormField = ({ title, value, placeholder, handleChangeText, otherStyles, .
       {/* Input */}
       <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-100 focus:border-secondary items-center flex-row">
         <TextInput
-          {...props}
+          // {...props}
           className="text -base mt-0.5 text-white flex-1 font-psemibold"
           value={value}
           placeholder={placeholder}

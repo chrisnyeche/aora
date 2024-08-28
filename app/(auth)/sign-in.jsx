@@ -17,15 +17,21 @@ const SignIn = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="my-6 px-4 w-full h-[75vh] mt-32">
+        <View className="w-full px-4 min-h-[75vh] mt-32">
           <Image source={images.logo} resizeMode="contain" className="h-[35px] w-[115px]" />
           <Text className="font-psemibold text-2xl text-white mt-10">Log In to Aora</Text>
-          <FormField title="Email" value={Form.email} otherStyles="mt-7" />
+          <FormField
+            title="Email"
+            value={Form.email}
+            otherStyles="mt-7"
+            handleChangeText={(e) => setForm({ ...Form, email: e })} // This is the change event handler for the email field
+            keyboardType="email-address"
+          />
           <FormField
             title="Password"
             value={Form.password}
             otherStyles="mt-7"
-            onChangeText={(e) => setForm({ ...form, password: e })} // This is the change event handler for the password field
+            handleChangeText={(e) => setForm({ ...Form, password: e })} // This is the change event handler for the password field
           />
           <CustomButton
             title="Sign in"
