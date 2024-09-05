@@ -1,9 +1,9 @@
-import { Image, SafeAreaView, ScrollView, StatusBar, Text, View } from "react-native";
+import { Image, SafeAreaView, ScrollView, StatusBar, Text, View, Alert } from "react-native";
 import React, { useState } from "react";
 import { images } from "../../constants";
 import FormField from "../../components/FormField";
 import CustomButton from "./../../components/CustomButton";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { createUser } from "../../lib/appwrite";
 
 const SignUp = () => {
@@ -14,8 +14,21 @@ const SignUp = () => {
     password: "",
   });
 
+  const router = useRouter();
   const submit = () => {
-    createUser();
+    if (!Form.username || !Form.email || !Form.password) {
+      Alert.alert(Error, "Please fill in all fields"); // This is the error message for the user
+      setisSubmitting(true); // This is the loading state for the user
+    } else {
+      try {
+        const result = createUser(Form.email, Form.password, Form.username);
+        router.replace("/home"); // This is the redirect to the home page
+      } catch (error) {
+        Alert.alert("error", error.message); // This is the error message for the user
+      } finally {
+        setisSubmitting(false);
+      }
+    }
   };
 
   return (
@@ -46,12 +59,12 @@ const SignUp = () => {
           <CustomButton
             title="Sign Up"
             containerStyles={"w-full mt-7"}
-            handlePress={submit()}
+            handlePress={() => submit()}
             isLoading={isSubmitting}
           />
 
           <View className="justify-center pt-5 flex-row">
-            <Text className="text-lg text-gray-100 font-pregular"> Have an account already?</Text>
+            <Text className="text-lg text-gray-100 font-pregular"> Have an account already? </Text>
             <Link href="/sign-in" className="text-lg font-psemibold text-secondary-100">
               {" "}
               Sign In
