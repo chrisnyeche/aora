@@ -5,9 +5,12 @@ import FormField from "../../components/FormField";
 import CustomButton from "./../../components/CustomButton";
 import { Link, useRouter } from "expo-router";
 import { createUser } from "../../lib/appwrite";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const SignUp = () => {
   const [isSubmitting, setisSubmitting] = useState(false);
+  const { setUser, setIsLoggedIn } = useGlobalContext();
+
   const [Form, setForm] = useState({
     username: "",
     email: "",
@@ -22,6 +25,9 @@ const SignUp = () => {
     } else {
       try {
         const result = createUser(Form.email, Form.password, Form.username);
+        setUser(result);
+        setIsLoggedIn(true);
+
         router.replace("/home"); // This is the redirect to the home page
       } catch (error) {
         Alert.alert("error", error.message); // This is the error message for the user

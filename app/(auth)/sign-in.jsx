@@ -4,23 +4,37 @@ import { images } from "../../constants";
 import FormField from "../../components/FormField";
 import CustomButton from "./../../components/CustomButton";
 import { Link, useRouter } from "expo-router";
-import { signIn } from "../../lib/appwrite";
+import { getCurrentUser, signIn } from "../../lib/appwrite";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const SignIn = () => {
   const [isSubmitting, setisSubmitting] = useState(false);
+  const { setUser, setIsLoggedIn } = useGlobalContext();
+  const router = useRouter();
+
   const [Form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const router = useRouter();
   const submit = async () => {
     if (!Form.email || !Form.password) {
       Alert.alert(Error, "Please fill in all fields"); // This is the error message for the user
       setisSubmitting(true); // This is the loading state for the user
     } else {
       try {
-        await signIn(Form.email, Form.password,);
+        await signIn(Form.email, Form.password);
+        const result = await getCurrentUser();
+        // if (result) {
+        //   console.log("result found:", result);
+        //   Alert.alert(Error, "result found");
+        // } else {
+        //   console.log("No result found");
+        //   Alert.alert(Error, "result Not found");
+        // }
+        setUser(result);
+        setIsLoggedIn(true);
+
         router.replace("/home"); // This is the redirect to the home page
       } catch (error) {
         Alert.alert("error", error.message); // This is the error message for the user
@@ -71,5 +85,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-
-
