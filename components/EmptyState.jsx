@@ -7,16 +7,14 @@ import CustomButton from "./CustomButton";
 const EmptyState = ({ title, subtitle }) => {
   return (
     <View className="flex justify-center items-center px-4">
-      <Image
-        source={images.empty}
-        resizeMode="contain"
-        className="w-[270px] h-[216px]"
-      />
+      {/* Find Icon Image */}
+      <Image source={images.empty} resizeMode="contain" className="w-[270px] h-[216px]" />
 
-      <Text className="text-sm font-pmedium text-gray-100">{title}</Text>
-      <Text className="text-xl text-center font-psemibold text-white mt-2">
-        {subtitle}
-      </Text>
+      {/* Empty State text */}
+      <View className="flex items-center justify-center">
+        <Text className="text-xl font-psemibold text-white">{title}</Text>
+        <Text className="text-xl text-center font-psemibold text-white mt-2">{subtitle}</Text>
+      </View>
 
       <CustomButton
         title="Back to Explore"

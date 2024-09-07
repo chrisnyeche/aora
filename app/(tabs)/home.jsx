@@ -1,56 +1,66 @@
-import { View, Text, SafeAreaView, FlatList } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  FlatList,
+  Image,
+  RefreshControlComponent,
+  Alert,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { images } from "../../constants";
+import SearchInput from "../../components/SearchInput";
+import Trending from "../../components/Trending";
+import EmptyState from "./../../components/EmptyState";
+import { RefreshControl } from "react-native";
+import { getAllPosts } from "../../lib/appwrite";
+import useAppwrite from "../../lib/useAppwrite";
+import VideoCard from "../../components/VideoCard";
 
 const Home = () => {
-  const DATA = [
-    { id: "1", title: "Item 1" },
-    { id: "2", title: "Item 2" },
-    { id: "3", title: "Item 3" },
-    { id: "4", title: "Item 4" },
-    // Add more items as needed
-  ];
+  const { data: posts, refetch } = useAppwrite(() => getAllPosts());
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = async () => {
+    setRefreshing(true); // Shows the loading spinner
+    await refetch();
+    setRefreshing(false); // Hides the loading spinner
+  };
+  // console.log(posts);
   return (
-    <SafeAreaView>
+    <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={DATA}
-        keyExtractor={(item) => item.$id}
-        renderItem={({ item }) => (
-          <View key={item.id}>
-            <Text className="text-3xl">{item.title}</Text>
-          </View>
-        )}
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <VideoCard video={item} />}
         ListHeaderComponent={() => (
-          <View style={styles.header}>
-            <Text style={styles.headerText}>My List Header</Text>
+          <View className="my-6 px-4 space-y-6 mt-20">
+            <View className="justify-between items-start flex-row mb-6">
+              {/* Title Heading */}
+              <View>
+                <Text className="font-pmedium text-sm text-gray-100">Welcome Back</Text>
+                <Text className="font-psemibold text-2xl text-white">Chris</Text>
+              </View>
+              {/* Logo */}
+              <View className="mt-1.5">
+                <Image source={images.logoSmall} resizeMethod="contain" className="w-9 h-10" />
+              </View>
+            </View>
+
+            <SearchInput placeholder={"Search for a Video topic"} />
+            <View>
+              <Text className="text-lg font-pregular text-gray-100 mb-3">Latest Videos </Text>
+            </View>
+
+            <Trending posts={[{ id: 1 }, { id: 2 }, { id: 3 }]} />
           </View>
         )}
-        ListFooterComponent={() => (
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>My List Footer</Text>
-          </View>
+        ListEmptyComponent={() => (
+          <EmptyState title={"No Videos Found"} subtitle={"Be the first to upload video"} />
         )}
-      ></FlatList>
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      />
     </SafeAreaView>
   );
 };
 
 export default Home;
-
-const styles = {
-  header: {
-    backgroundColor: "#f1f1f1",
-    padding: 20,
-  },
-  headerText: {
-    fontWeight: "bold",
-    color: "#333",
-  },
-  footer: {
-    backgroundColor: "#f1f1f1",
-    padding: 20,
-  },
-  footerText: {
-    fontWeight: "bold",
-    color: "#333",
-  },
-};

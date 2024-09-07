@@ -25,13 +25,6 @@ const SignIn = () => {
       try {
         await signIn(Form.email, Form.password);
         const result = await getCurrentUser();
-        // if (result) {
-        //   console.log("result found:", result);
-        //   Alert.alert(Error, "result found");
-        // } else {
-        //   console.log("No result found");
-        //   Alert.alert(Error, "result Not found");
-        // }
         setUser(result);
         setIsLoggedIn(true);
 
