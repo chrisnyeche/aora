@@ -1,29 +1,80 @@
-import React, { useState } from "react";
-import { FlatList, RefreshControl, Text, View } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, ImageBackground, Image } from "react-native";
+import * as Animatable from "react-native-animatable"; //
+import { useState } from "react";
+import { icons } from "../constants";
 
-const MyList = () => {
-  const [refreshing, setRefreshing] = useState(false);
-  const DATA = [{ id: '1', title: 'Item 1' }, { id: '2', title: 'Item 2' }];
+const zoomIn = {
+  0: {
+    scale: 0.9,
+  },
+  1: {
+    scale: 1,
+  },
+};
 
-  const onRefresh = async () => {
-    setRefreshing(true); // Show the spinner
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate fetching data
-    setRefreshing(false); // Hide the spinner after refresh
-  };
+const zoomOut = {
+  0: {
+    scale: 1,
+  },
+  1: {
+    scale: 0.9,
+  },
+};
 
+const TrendingItem = ({ activeItem, item, itemId }) => {
+  const [play, setplay] = useState(false);
   return (
-    <FlatList
-      data={DATA}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <View>
-          <Text>{item.title}</Text>
-        </View>
+    <Animatable.View
+      className="mr-5"
+      animation={activeItem === item.$id ? zoomIn : zoomOut}
+      duration={500}
+    >
+      {play ? (
+        <Text className="text-white">Playing</Text>
+      ) : (
+        <TouchableOpacity
+          className="relative justify-center items-center"
+          activeOpacity={0.7}
+          onPress={() => setplay(true)}
+        >
+          <ImageBackground
+            source={{ uri: item.thumbnail }}
+            className="w-52 h-72 rounded-[35px] my-5 overflow-hidden shadow-lg shadow-black/40"
+            resizeMode="cover"
+          />
+          <Image source={icons.play} className="w-12 h-12 absolute" resizeMode="contain" />
+        </TouchableOpacity>
       )}
-      // Adding the RefreshControl
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    />
+    </Animatable.View>
   );
 };
 
-export default MyList;
+const Trending = ({ posts }) => {
+  const [activeItem, setActiveItem] = useState(posts.documents[1]);
+  const itemId = posts.documents[0].$id;
+
+  const viewableItemsChanged = ({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setActiveItem(viewableItems[0].key);
+    }
+  };
+  return (
+    <View>
+      <FlatList
+        data={posts.documents}
+        horizontal // horizontal scrolling
+        keyExtractor={(item) => item.$id} // key extractor
+        renderItem={({ item }) => (
+          <TrendingItem activeItem={activeItem} item={item} itemId={itemId} />
+        )}
+        onViewableItemsChanged={viewableItemsChanged}
+        viewabilityConfig={{
+          itemVisiblePercentThreshold: 70,
+        }}
+        contentOffset={{ x: 170 }}
+      />
+    </View>
+  );
+};
+
+export default Trending;
