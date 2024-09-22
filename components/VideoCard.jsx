@@ -34,14 +34,14 @@ const VideoCard = ({
 
   const handleBookmark = () => {
     // Handle bookmarking logic here
-    console.log("Bookmark clicked for video", title);
+    Alert.alert("Coming Soon", "Get ready for this feature");
+    // console.log("Bookmark clicked for video", title);
     setIsOptionsVisible(false);
   };
 
   const handleDeleteVideo = async (documentId) => {
     try {
-      // await deleteVideo(documentId);
-      Alert.alert("Success", "Video has been deleted.");
+      await deleteVideo(documentId);
       Refresh();
     } catch (error) {
       setErrorMessage(error.message);
