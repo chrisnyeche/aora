@@ -6,10 +6,16 @@ import CustomButton from "./../../components/CustomButton";
 import { Link, useRouter } from "expo-router";
 import { createUser } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { LoadingAlert } from "../../components/SweetAlert";
+import ErrorModal from "../../components/ErrorModal";
 
 const SignUp = () => {
-  const [isSubmitting, setisSubmitting] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { setUser, setIsLoggedIn } = useGlobalContext();
+  const router = useRouter();
 
   const [Form, setForm] = useState({
     username: "",
@@ -17,23 +23,37 @@ const SignUp = () => {
     password: "",
   });
 
-  const router = useRouter();
-  const submit = () => {
-    if (!Form.username || !Form.email || !Form.password) {
-      Alert.alert(Error, "Please fill in all fields"); // This is the error message for the user
-      setisSubmitting(true); // This is the loading state for the user
-    } else {
-      try {
-        const result = createUser(Form.email, Form.password, Form.username);
-        setUser(result);
-        setIsLoggedIn(true);
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        router.replace("/home"); // This is the redirect to the home page
-      } catch (error) {
-        Alert.alert("error", error.message); // This is the error message for the user
-      } finally {
-        setisSubmitting(false);
-      }
+  const submit = async () => {
+    if (!Form.username || !Form.email || !Form.password) {
+      setErrorMessage("Please fill in all fields");
+      setIsErrorModalVisible(true);
+      return; // Stop further execution
+    }
+
+    if (!emailRegex.test(Form.email)) {
+      setErrorMessage("Please enter a valid email address");
+      setIsErrorModalVisible(true);
+      return; // Stop further execution
+    }
+
+    setIsSubmitting(true); // Show loading state
+    setIsModalVisible(true); // Show modal
+
+    try {
+      const result = await createUser(Form.email, Form.password, Form.username);
+      setUser(result);
+      setIsLoggedIn(true);
+
+      router.replace("/home"); // Redirect to the home page
+    } catch (error) {
+      setErrorMessage(error.message);
+      setIsErrorModalVisible(true);
+    } finally {
+      setIsSubmitting(false); // End loading state
+      setIsModalVisible(false); // Hide modal
     }
   };
 
@@ -42,7 +62,7 @@ const SignUp = () => {
       <ScrollView>
         <View className="w-full px-4 min-h-[75vh] mt-32">
           <Image source={images.logo} resizeMode="contain" className="h-[35px] w-[115px]" />
-          <Text className="font-psemibold text-2xl text-white mt-10">Log In to Aora</Text>
+          <Text className="font-psemibold text-2xl text-white mt-10">Sign up to Aora</Text>
           <FormField
             title="Username"
             value={Form.username}
@@ -76,6 +96,12 @@ const SignUp = () => {
               Sign In
             </Link>
           </View>
+          <ErrorModal
+            isVisible={isErrorModalVisible}
+            message={errorMessage}
+            onClose={() => setIsErrorModalVisible(false)}
+          />
+          <LoadingAlert isVisible={isModalVisible} message="Signing Up" loading={isSubmitting} />
         </View>
         <StatusBar style="light" backgroundColor="#161622" />
       </ScrollView>

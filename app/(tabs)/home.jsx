@@ -1,18 +1,19 @@
-import { View, Text, SafeAreaView, FlatList, Image, Alert } from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, Text, SafeAreaView, FlatList, Image, RefreshControl } from "react-native";
+import React, { useState } from "react";
 import { images } from "../../constants";
 import SearchInput from "../../components/SearchInput";
 import Trending from "../../components/Trending";
 import EmptyState from "./../../components/EmptyState";
-import { RefreshControl } from "react-native";
 import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../../components/VideoCard";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Home = () => {
   // Fetch data from Appwrite API
   const { data: posts, refetch } = useAppwrite(getAllPosts);
   const { data: latestPosts } = useAppwrite(getLatestPosts);
+  const { user } = useGlobalContext();
 
   // Pull to refresh
   const [refreshing, setRefreshing] = useState(false);
@@ -34,7 +35,7 @@ const Home = () => {
               {/* Title Heading */}
               <View>
                 <Text className="font-pmedium text-sm text-gray-100">Welcome Back</Text>
-                <Text className="font-psemibold text-2xl text-white">Christopher</Text>
+                <Text className="font-psemibold text-2xl text-white">{user?.username}</Text>
               </View>
               {/* Logo */}
               <View className="mt-1.5">

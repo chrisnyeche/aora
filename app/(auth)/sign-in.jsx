@@ -1,4 +1,13 @@
-import { Image, SafeAreaView, ScrollView, StatusBar, Text, View, Alert } from "react-native";
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  Text,
+  View,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState } from "react";
 import { images } from "../../constants";
 import FormField from "../../components/FormField";
@@ -6,9 +15,14 @@ import CustomButton from "./../../components/CustomButton";
 import { Link, useRouter } from "expo-router";
 import { getCurrentUser, signIn } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { LoadingAlert } from "../../components/SweetAlert";
+import ErrorModal from "../../components/ErrorModal";
 
 const SignIn = () => {
   const [isSubmitting, setisSubmitting] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { setUser, setIsLoggedIn } = useGlobalContext();
   const router = useRouter();
 
@@ -19,21 +33,31 @@ const SignIn = () => {
 
   const submit = async () => {
     if (!Form.email || !Form.password) {
-      Alert.alert(Error, "Please fill in all fields"); // This is the error message for the user
-      setisSubmitting(true); // This is the loading state for the user
-    } else {
-      try {
-        await signIn(Form.email, Form.password);
-        const result = await getCurrentUser();
+      setErrorMessage("Please fill in all fields");
+      setIsErrorModalVisible(true);
+      return; // Stop further execution
+    }
+
+    setisSubmitting(true);
+    setIsModalVisible(true); // Show modal
+
+    try {
+      await signIn(Form.email, Form.password);
+      const result = await getCurrentUser();
+
+      if (result) {
         setUser(result);
         setIsLoggedIn(true);
-
-        router.replace("/home"); // This is the redirect to the home page
-      } catch (error) {
-        Alert.alert("error", error.message); // This is the error message for the user
-      } finally {
-        setisSubmitting(false);
+        router.replace("/home");
+      } else {
+        throw new Error("User could not be authenticated");
       }
+    } catch (error) {
+      setErrorMessage(error.message);
+      setIsErrorModalVisible(true);
+    } finally {
+      setisSubmitting(false);
+      setIsModalVisible(false); // Hide modal
     }
   };
 
@@ -70,6 +94,12 @@ const SignIn = () => {
               Sign Up
             </Link>
           </View>
+          <ErrorModal
+            isVisible={isErrorModalVisible}
+            message={errorMessage}
+            onClose={() => setIsErrorModalVisible(false)}
+          />
+          <LoadingAlert isVisible={isModalVisible} message="Signing in" loading={isSubmitting} />
         </View>
         <StatusBar style="light" backgroundColor="#161622" />
       </ScrollView>
