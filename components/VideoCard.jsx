@@ -23,7 +23,7 @@ const VideoCard = ({
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const [buttonLayout, setButtonLayout] = useState(null);
   const { data: posts, refetch } = useAppwrite(getAllPosts);
-
+ 
   // Pull to refresh
   const [refreshing, setRefreshing] = useState(false);
   const Refresh = async () => {

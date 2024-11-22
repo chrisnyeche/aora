@@ -11,7 +11,7 @@ const Bookmark = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-primary h-full" style={{ backgroundColor: "#161622" }}>
       <View className="justify-center h-full w-full">
         <EmptyState title={"Coming Soon"} subtitle={"Get ready for this feature"} />
       </View>

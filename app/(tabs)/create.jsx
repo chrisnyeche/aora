@@ -101,7 +101,7 @@ const Create = () => {
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-primary h-full" style={{ backgroundColor: "#161622" }}>
       <ScrollView className="px-4 my-10">
         <Text className="text-2xl text-white font-psemibold"> Upload Video </Text>
 

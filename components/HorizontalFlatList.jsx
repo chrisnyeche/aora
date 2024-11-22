@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Animated, FlatList, Text, View } from "react-native";
+import { Animated, Text, View } from "react-native";
 
 const data = [
   { id: "1", title: "Item 1" },

@@ -11,7 +11,7 @@ const App = () => {
   if (!isLoading && isLoggedIn) return <Redirect href="/home" />;
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-primary h-full" style={{ backgroundColor: "#161622" }}>
       <ScrollView contentContainerStyle={{ height: "100vh" }}>
         <View className={`w-full justify-center items-center px-4`}>
           <Image source={images.logo} resizeMode="contain" className="w-40 h-40" />
